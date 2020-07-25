@@ -1,5 +1,5 @@
 const ConsistentHashing = require('./consistent_hashing/consistent_hashing');
-const loadbalancer  = new ConsistentHashing(["node1", "node2", "node3", "node4", "node5"],4,'md5');
+const loadbalancer = new ConsistentHashing(["node1", "node2", "node3", "node4", "node5"], 10, 'md5',1500);
 
 const nodes = {};
 
@@ -10,16 +10,32 @@ const chars = [
   'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'
 ];
 
-chars.forEach((c)=>{
-  //get address where need to go/save
-  const node = loadbalancer.getNode(c);
+const run_time_task = []
 
-  if (nodes[node]) {
-    nodes[node].push(c);
-  } else {
-    nodes[node] = [];
-    nodes[node].push(c);
-  }
-});
+for (let i = 0; i < chars.length; i++) {
+  run_time_task.push(
+    new Promise((resolve, reject) => {
 
-console.log(nodes);
+      setTimeout(() => {
+        //get address where need to go/save
+        const node = loadbalancer.getNode(chars[i]);
+
+        if (nodes[node]) {
+          nodes[node].push(chars[i]);
+        } else {
+          nodes[node] = [];
+          nodes[node].push(chars[i]);
+        }
+
+        console.log(nodes)
+        resolve(nodes)
+
+      },1000*i)
+
+    })
+  )
+}
+
+Promise.all(run_time_task).then(()=>{
+  console.log(nodes)
+})

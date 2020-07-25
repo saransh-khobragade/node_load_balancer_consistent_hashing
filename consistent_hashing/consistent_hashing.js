@@ -1,7 +1,7 @@
 const crypto = require('crypto')
 
 class Consistent_hashing {
-    constructor(nodes, replicas = 4, algorithm = 'md5') {
+    constructor(nodes, replicas = 4, algorithm = 'md5',add_note_dynamically_time=2000) {
         this.replicas = replicas;
         this.algorithm = algorithm
         this.ring = {};
@@ -9,10 +9,9 @@ class Consistent_hashing {
         this.nodes = [];
 
         for (let i = 0; i < nodes.length; i++) {
-            // setTimeout(()=>{
-            //     this.addNode(nodes[i]);
-            // },1000*i)
-            this.addNode(nodes[i]);
+            setTimeout(()=>{
+                this.addNode(nodes[i]);
+            },add_note_dynamically_time*i)
         }
     }
     addNode(node) {
